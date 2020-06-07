@@ -1,0 +1,12 @@
+.add-new-action {
+  width: 100%;
+  display: block;
+  padding: 7px;
+  margin-top: 14px;
+  border: 1px dashed #ddd;
+  text-align: center;
+}
+
+.add-new-action:hover {
+  border-color: #1890ff;
+}

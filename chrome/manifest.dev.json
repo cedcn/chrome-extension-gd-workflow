@@ -1,0 +1,32 @@
+{
+  "version": "0.0.0",
+  "name": "GD Workflow",
+  "manifest_version": 2,
+  "description": "GD Workflow",
+  "browser_action": {
+    "default_title": "GD Workflow"
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "img/icon-16.png",
+    "48": "img/icon-48.png",
+    "128": "img/icon-128.png"
+  },
+  "author": "shores",
+  "homepage_url": "https://jinshuju.net/",
+  "background": {
+    "page": "background.html"
+  },
+  "web_accessible_resources": ["inject.html"],
+  "permissions": [
+    "contextMenus",
+    "tabs",
+    "cookies",
+    "webRequest",
+    "webRequestBlocking",
+    "http://*/*",
+    "https://*/*",
+    "storage"
+  ],
+  "content_security_policy": "default-src 'self'; script-src 'self' http://localhost:3333 https://localhost:3333 https://*.jinshuju.net 'unsafe-eval'; connect-src http://localhost:3333 https://localhost:3333 https://*.jinshuju.net; style-src * 'unsafe-inline' 'self' blob:; img-src 'self' data:;"
+}
