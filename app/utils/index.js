@@ -1,4 +1,4 @@
-import { floor } from 'lodash'
+import floor from 'lodash/floor'
 import dayjs from 'dayjs'
 
 require('dayjs/locale/zh-cn')
@@ -10,11 +10,15 @@ dayjs.extend(duration)
 
 dayjs.locale('zh-cn')
 
-export const getCurrentMileStoneStr = () => {
+export const getCurrentMileStoneStr = (offset = 0) => {
   const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
   const startDay = dayjs('2018-05-07T00:00:00.000Z')
-  const currentDay = dayjs()
+  let currentDay = dayjs()
+  if (offset !== 0) {
+    currentDay = currentDay.add(offset, 'week')
+  }
   const d = currentDay.diff(startDay, 'day')
+
   const bigId = floor(d / 7)
   const startWeekDay = currentDay.weekday(0)
   const endWeekDay = currentDay.weekday(6)

@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "1.2.1",
   "name": "GD Workflow",
   "manifest_version": 2,
-  "description": "GD Workflow",
+  "description": "金数据 Workflow",
   "browser_action": {
     "default_title": "GD Workflow"
   },
@@ -17,16 +17,18 @@
   "background": {
     "page": "background.html"
   },
-  "web_accessible_resources": ["inject.html"],
-  "permissions": [
-    "contextMenus",
-    "tabs",
-    "cookies",
-    "webRequest",
-    "webRequestBlocking",
-    "http://*/*",
-    "https://*/*",
-    "storage"
+  "content_scripts": [
+    {
+      "matches": ["http://*.jinshuju.net/f/*", "https://*.jinshuju.net/f/*"],
+      "js": ["js/content-script.bundle.js"]
+    },
+    {
+      "matches": ["http://*.jinshuju.net/f/*", "https://*.jinshuju.net/f/*"],
+      "js": ["js/inject-script.bundle.js"],
+      "run_at": "document_start"
+    }
   ],
+  "web_accessible_resources": ["js/inject.bundle.js"],
+  "permissions": ["contextMenus", "tabs", "storage"],
   "content_security_policy": "default-src 'self'; script-src 'self' https://*.jinshuju.net 'unsafe-eval'; connect-src https://*.jinshuju.net; style-src * 'unsafe-inline' 'self' blob:; img-src 'self' data:;"
 }

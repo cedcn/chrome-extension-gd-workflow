@@ -1,4 +1,5 @@
-import { map, get, isEmpty, forEach } from 'lodash'
+import { reduce, forEach, get, map } from 'lodash'
+import parse from 'url-parse'
 import { getCurrentMileStoneStr } from '../../../app/utils'
 
 const CONTEXT_MENU_ID = 'form_fill_menu'
@@ -7,7 +8,7 @@ chrome.contextMenus.create({
   id: CONTEXT_MENU_ID,
   title: 'Fill This Form',
   contexts: ['page'],
-  documentUrlPatterns: ['http://*/*', 'https://*/*'],
+  documentUrlPatterns: ['http://*.jinshuju.net/f/*', 'https://*.jinshuju.net/f/*'],
 })
 
 chrome.contextMenus.create({
@@ -15,30 +16,52 @@ chrome.contextMenus.create({
   type: 'separator',
 })
 
+const replaceMatchers = [
+  {
+    regex: /\$\{m\}/,
+    value: getCurrentMileStoneStr(),
+  },
+  {
+    regex: /\$\{m-1\}/,
+    value: getCurrentMileStoneStr(-1),
+  },
+  {
+    regex: /\$\{m\+1\}/,
+    value: getCurrentMileStoneStr(1),
+  },
+]
+
 const addMenus = (actions) => {
   return map(actions, (action, index) => {
-    if (!isEmpty(action.name)) {
-      const id = Math.random()
-        .toString(36)
-        .substr(2)
-      const menuItemId = `action-${index}-${id}`
+    const id = Math.random()
+      .toString(36)
+      .substr(2)
+    const menuItemId = `action-${index}-${id}`
 
-      chrome.contextMenus.create({
-        id: menuItemId,
-        title: action.name,
-        contexts: ['all'],
-        documentUrlPatterns: ['http://*/*', 'https://*/*'],
-      })
+    chrome.contextMenus.create({
+      id: menuItemId,
+      title: action.name,
+      contexts: ['all'],
+      documentUrlPatterns: ['http://*/*', 'https://*/*'],
+    })
 
-      const listener = (params) => {
-        if (params.menuItemId === menuItemId) {
-          const targetUrl = action.action.value.replace(/\$\{m\}/, getCurrentMileStoneStr())
-          chrome.tabs.create({ url: targetUrl })
-        }
+    const listener = (params) => {
+      if (params.menuItemId === menuItemId) {
+        const targetUrl = reduce(replaceMatchers, (acc, cur) => acc.replace(cur.regex, cur.value), action.action.value)
+        const targetParsed = parse(targetUrl)
+        chrome.tabs.query({ active: true }, (tabs) => {
+          const activeUrl = tabs[0].url
+
+          if (activeUrl && activeUrl.match(targetParsed.hostname)) {
+            chrome.tabs.update({ url: targetUrl })
+          } else {
+            chrome.tabs.create({ url: targetUrl })
+          }
+        })
       }
-      chrome.contextMenus.onClicked.addListener(listener)
-      return { menuItemId, listener }
     }
+    chrome.contextMenus.onClicked.addListener(listener)
+    return { menuItemId, listener }
   })
 }
 

@@ -6,6 +6,8 @@ module.exports = {
   entry: {
     background: path.join(__dirname, '../chrome/extension/background'),
     inject: path.join(__dirname, '../chrome/extension/inject'),
+    'content-script': path.join(__dirname, '../chrome/extension/content-script'),
+    'inject-script': path.join(__dirname, '../chrome/extension/inject-script'),
     options: path.join(__dirname, '../chrome/extension/options'),
   },
   mode: 'production',

@@ -8,7 +8,6 @@ import styles from './index.module.css'
 
 const { TextArea } = Input
 
-const mStr = getCurrentMileStoneStr()
 const columns = [
   {
     title: '变量名',
@@ -38,24 +37,29 @@ const operateRender = (text, record, index) => {
     }
 
     const handleOk = () => {
-      const values = form.getFieldsValue()
-      setConfirmLoading(true)
+      form.validateFields().then((values) => {
+        setConfirmLoading(true)
 
-      chrome.storage.local.get('actions', (value) => {
-        const nActions = produce(get(value, 'actions'), (draftActions) => {
-          // eslint-disable-next-line no-param-reassign
-          draftActions[index] = { ...draftActions[index], ...values }
-        })
+        chrome.storage.local.get('actions', (value) => {
+          const nActions = produce(get(value, 'actions'), (draftActions) => {
+            // eslint-disable-next-line no-param-reassign
+            draftActions[index] = { ...draftActions[index], ...values }
+          })
 
-        chrome.storage.local.set({ actions: nActions }, () => {
-          setConfirmLoading(false)
-          setVisible(false)
-          message.success('保存成功')
+          chrome.storage.local.set({ actions: nActions }, () => {
+            setConfirmLoading(false)
+            setVisible(false)
+            message.success('保存成功')
+          })
         })
       })
     }
 
     const removeAction = () => {
+      if (!window.confirm('确认删除')) {
+        return
+      }
+
       chrome.storage.local.get('actions', (value) => {
         const nActions = produce(get(value, 'actions'), (draftActions) => {
           // eslint-disable-next-line no-param-reassign
@@ -84,18 +88,19 @@ const operateRender = (text, record, index) => {
           onOk={handleOk}
           confirmLoading={confirmLoading}
           onCancel={handleCancel}
+          width={768}
           destroyOnClose
         >
-          <Form form={form} layout="vertical" initialValues={record}>
-            <Form.Item label="名称" name="name">
+          <Form labelCol={{ span: 3 }} wrapperCol={{ span: 21 }} form={form} initialValues={record}>
+            <Form.Item label="名称" name="name" rules={[{ required: true, message: 'Required!' }]}>
               <Input />
             </Form.Item>
-            <Form.Item label="类型" name={['action', 'type']}>
+            <Form.Item label="类型" name={['action', 'type']} rules={[{ required: true, message: 'Required!' }]}>
               <Select>
                 <Select.Option value="link">链接</Select.Option>
               </Select>
             </Form.Item>
-            <Form.Item label="值" name={['action', 'value']}>
+            <Form.Item label="值" name={['action', 'value']} rules={[{ required: true, message: 'Required!' }]}>
               <TextArea style={{ minHeight: '100px' }} />
             </Form.Item>
           </Form>
@@ -114,7 +119,7 @@ const actionsColumns = [
     key: 'name',
   },
   {
-    title: 'Actions',
+    title: 'Action',
     dataIndex: 'action',
     key: 'action',
     width: 250,
@@ -128,7 +133,7 @@ const actionsColumns = [
     },
   },
   {
-    title: 'Shortcuts',
+    title: 'Shortcut',
     dataIndex: 'shortcut',
     key: 'shortcut',
   },
@@ -153,15 +158,15 @@ const Actions = () => {
   }
 
   const handleOk = () => {
-    const values = form.getFieldsValue()
+    form.validateFields().then((values) => {
+      const nActions = produce(actions, (draftActions) => {
+        draftActions.push(values)
+      })
 
-    const nActions = produce(actions, (draftActions) => {
-      draftActions.push(values)
-    })
-
-    chrome.storage.local.set({ actions: nActions }, () => {
-      setVisible(false)
-      message.success('创建成功')
+      chrome.storage.local.set({ actions: nActions }, () => {
+        setVisible(false)
+        message.success('创建成功')
+      })
     })
   }
 
@@ -190,10 +195,24 @@ const Actions = () => {
   const dataSource = [
     {
       key: '1',
+      name: 'Prev Milestone',
+      // eslint-disable-next-line no-template-curly-in-string
+      symbol: '${m-1}',
+      value: getCurrentMileStoneStr(-1),
+    },
+    {
+      key: '2',
       name: 'Current Milestone',
       // eslint-disable-next-line no-template-curly-in-string
       symbol: '${m}',
-      value: mStr,
+      value: getCurrentMileStoneStr(),
+    },
+    {
+      key: '3',
+      name: 'Next Milestone',
+      // eslint-disable-next-line no-template-curly-in-string
+      symbol: '${m+1}',
+      value: getCurrentMileStoneStr(1),
     },
   ]
 
@@ -217,16 +236,21 @@ const Actions = () => {
         +添加一个Action
       </a>
       <Modal title="Create Action" visible={visible} onOk={handleOk} onCancel={handleCancel} destroyOnClose>
-        <Form form={form} layout="vertical">
-          <Form.Item label="名称" name="name">
+        <Form form={form} labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+          <Form.Item label="名称" name="name" rules={[{ required: true, message: 'Required!' }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="类型" name={['action', 'type']} initialValue="link">
+          <Form.Item
+            label="类型"
+            name={['action', 'type']}
+            initialValue="link"
+            rules={[{ required: true, message: 'Required!' }]}
+          >
             <Select>
               <Select.Option value="link">链接</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item label="值" name={['action', 'value']}>
+          <Form.Item label="值" name={['action', 'value']} rules={[{ required: true, message: 'Required!' }]}>
             <TextArea style={{ minHeight: '100px' }} />
           </Form.Item>
         </Form>

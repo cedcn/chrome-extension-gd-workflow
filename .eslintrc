@@ -2,7 +2,9 @@
   "parser": "babel-eslint",
   "extends": ["airbnb", "prettier"],
   "globals": {
-    "chrome": true
+    "chrome": true,
+    "$": true,
+    "GD": true
   },
   "env": {
     "browser": true,
@@ -24,6 +26,7 @@
     "react/jsx-wrap-multilines": 0,
     "no-plusplus": 0,
     "no-bitwise": 0,
+    "no-alert": 0,
     "import/no-unresolved": 0,
     "jsx-a11y/click-events-have-key-events": 0,
     "jsx-a11y/no-static-element-interactions": 0,
@@ -38,6 +41,7 @@
     "spaced-comment": 0,
     "global-require": 0,
     "no-underscore-dangle": 0,
-    "react/jsx-one-expression-per-line": 0
+    "react/jsx-one-expression-per-line": 0,
+    "func-names": 0
   }
 }

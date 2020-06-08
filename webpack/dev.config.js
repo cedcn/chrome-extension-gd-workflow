@@ -2,27 +2,15 @@ const path = require('path')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 
-const host = 'localhost'
-const port = 3333
-
 const baseDevConfig = () => ({
-  devtool: 'eval-cheap-module-source-map',
+  devtool: 'eval-source-map',
   mode: 'development',
   entry: {
     background: path.join(__dirname, '../chrome/extension/background'),
     inject: path.join(__dirname, '../chrome/extension/inject'),
+    'content-script': path.join(__dirname, '../chrome/extension/content-script'),
+    'inject-script': path.join(__dirname, '../chrome/extension/inject-script'),
     options: path.join(__dirname, '../chrome/extension/options'),
-  },
-  devMiddleware: {
-    publicPath: `http://${host}:${port}/js`,
-    stats: {
-      colors: true,
-    },
-    noInfo: true,
-    headers: { 'Access-Control-Allow-Origin': '*' },
-  },
-  hotMiddleware: {
-    path: '/js/__webpack_hmr',
   },
   output: {
     path: path.join(__dirname, '../dev/js'),
@@ -30,12 +18,9 @@ const baseDevConfig = () => ({
     chunkFilename: '[id].chunk.js',
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.IgnorePlugin(/[^/]+\/[\S]+.prod$/),
     new webpack.DefinePlugin({
-      __HOST__: `'${host}'`,
-      __PORT__: port,
       'process.env': {
         NODE_ENV: JSON.stringify('development'),
       },
