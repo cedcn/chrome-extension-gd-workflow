@@ -1,6 +1,7 @@
 import { reduce, forEach, get, map } from 'lodash'
 import parse from 'url-parse'
-import { getCurrentMileStoneStr } from '../../../app/utils'
+import { getCurrentMileStoneStr, generateId } from '../../../app/utils'
+import { initFiller, initActions } from '../utils'
 
 const CONTEXT_MENU_ID = 'form_fill_menu'
 
@@ -16,27 +17,10 @@ chrome.contextMenus.create({
   type: 'separator',
 })
 
-const replaceMatchers = [
-  {
-    regex: /\$\{m\}/,
-    value: getCurrentMileStoneStr(),
-  },
-  {
-    regex: /\$\{m-1\}/,
-    value: getCurrentMileStoneStr(-1),
-  },
-  {
-    regex: /\$\{m\+1\}/,
-    value: getCurrentMileStoneStr(1),
-  },
-]
-
-const addMenus = (actions) => {
-  return map(actions, (action, index) => {
-    const id = Math.random()
-      .toString(36)
-      .substr(2)
-    const menuItemId = `action-${index}-${id}`
+const updateDynamicMenus = (actions) => {
+  return map(actions, (action) => {
+    const id = generateId()
+    const menuItemId = `action-menu-${id}`
 
     chrome.contextMenus.create({
       id: menuItemId,
@@ -47,6 +31,21 @@ const addMenus = (actions) => {
 
     const listener = (params) => {
       if (params.menuItemId === menuItemId) {
+        const replaceMatchers = [
+          {
+            regex: /\$\{m\}/,
+            value: getCurrentMileStoneStr(),
+          },
+          {
+            regex: /\$\{m-1\}/,
+            value: getCurrentMileStoneStr(-1),
+          },
+          {
+            regex: /\$\{m\+1\}/,
+            value: getCurrentMileStoneStr(1),
+          },
+        ]
+
         const targetUrl = reduce(replaceMatchers, (acc, cur) => acc.replace(cur.regex, cur.value), action.action.value)
         const targetParsed = parse(targetUrl)
         chrome.tabs.query({ active: true }, (tabs) => {
@@ -60,6 +59,7 @@ const addMenus = (actions) => {
         })
       }
     }
+
     chrome.contextMenus.onClicked.addListener(listener)
     return { menuItemId, listener }
   })
@@ -83,14 +83,14 @@ chrome.storage.onChanged.addListener((changes) => {
         })
       })
     }).then(() => {
-      actionsMenu = addMenus(newActions)
+      actionsMenu = updateDynamicMenus(newActions)
     })
   }
 })
 
 chrome.storage.local.get('actions', (value) => {
   const actions = get(value, 'actions', [])
-  actionsMenu = addMenus(actions)
+  actionsMenu = updateDynamicMenus(actions)
 })
 
 chrome.contextMenus.onClicked.addListener((params, tab) => {
@@ -98,3 +98,19 @@ chrome.contextMenus.onClicked.addListener((params, tab) => {
     chrome.tabs.sendMessage(tab.id, 'fillMenuClicked')
   }
 })
+
+const installedHandler = ({ reason }) => {
+  if (reason === 'install') {
+    initFiller()
+    initActions().then((actions) => {
+      actionsMenu = updateDynamicMenus(actions)
+    })
+  }
+}
+
+const suspendHandler = () => {
+  chrome.runtime.onInstalled.removeListener(installedHandler)
+}
+
+chrome.runtime.onInstalled.addListener(installedHandler)
+chrome.runtime.onSuspend.addListener(suspendHandler)

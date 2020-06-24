@@ -23,7 +23,7 @@ export const getCurrentMileStoneStr = (offset = 0) => {
   const startWeekDay = currentDay.weekday(0)
   const endWeekDay = currentDay.weekday(6)
 
-  const startM = currentDay.weekday(6).month()
+  const startM = currentDay.weekday(0).month()
   const endM = currentDay.weekday(6).month()
   const startStr = `${MONTHS[startM]}${startWeekDay.format('DD')}`
   const endStr = `${MONTHS[endM]}${endWeekDay.format('DD')}`
@@ -31,3 +31,8 @@ export const getCurrentMileStoneStr = (offset = 0) => {
 
   return str
 }
+
+export const generateId = () =>
+  Math.random()
+    .toString(36)
+    .substr(2)
