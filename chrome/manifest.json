@@ -1,5 +1,5 @@
 {
-  "version": "1.2.3",
+  "version": "2.0.0",
   "name": "GD Workflow",
   "manifest_version": 2,
   "description": "金数据 Workflow",
@@ -32,12 +32,9 @@
   "web_accessible_resources": ["js/inject.bundle.js"],
   "permissions": [
     "contextMenus",
-    "tabs",
+    "activeTab",
     "webRequest",
     "cookies",
-    "webRequestBlocking",
-    "http://*/*",
-    "https://*/*",
     "storage"
   ],
   "content_security_policy": "default-src 'self'; script-src 'self' https://*.jinshuju.net 'unsafe-eval'; connect-src https://*.jinshuju.net; style-src * 'unsafe-inline' 'self' blob:; img-src 'self' data:;"
