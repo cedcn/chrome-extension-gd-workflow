@@ -9,9 +9,21 @@ const Popup = () => {
 
   useEffect(() => {
     setIsLoading(true)
-    quickLook('md8S6J', (resData) => {
-      setIsLoading(false)
-      setContent(resData)
+    chrome.tabs.query({ active: true }, (tabs) => {
+      const tab = tabs[0] || {}
+
+      const matchResult = tab.url.match(/jinshuju.net\/f\/([^/?]+)/) || []
+      const matchedformToken = matchResult[1]
+
+      if (matchedformToken) {
+        quickLook(matchedformToken, (resData) => {
+          setIsLoading(false)
+          setContent(resData)
+        })
+      } else {
+        setContent('没有匹配到 From Token.')
+        setIsLoading(false)
+      }
     })
   }, [])
 
