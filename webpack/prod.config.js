@@ -9,6 +9,7 @@ module.exports = {
     'content-script': path.join(__dirname, '../chrome/extension/content-script'),
     'inject-script': path.join(__dirname, '../chrome/extension/inject-script'),
     options: path.join(__dirname, '../chrome/extension/options'),
+    popup: path.join(__dirname, '../chrome/extension/popup'),
   },
   mode: 'production',
   output: {

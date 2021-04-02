@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "金数据 Workflow",
   "browser_action": {
-    "default_title": "GD Workflow"
+    "default_title": "GD Workflow",
+    "default_popup": "popup.html"
   },
   "options_page": "options.html",
   "icons": {
@@ -29,6 +30,6 @@
     }
   ],
   "web_accessible_resources": ["js/inject.bundle.js"],
-  "permissions": ["contextMenus", "tabs", "storage"],
+  "permissions": ["contextMenus", "tabs", "webRequest", "webRequestBlocking", "http://*/*", "https://*/*", "storage"],
   "content_security_policy": "default-src 'self'; script-src 'self' https://*.jinshuju.net 'unsafe-eval'; connect-src https://*.jinshuju.net; style-src * 'unsafe-inline' 'self' blob:; img-src 'self' data:;"
 }
