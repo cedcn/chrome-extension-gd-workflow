@@ -33,7 +33,6 @@
   "permissions": [
     "contextMenus",
     "activeTab",
-    "webRequest",
     "cookies",
     "storage"
   ],
