@@ -30,11 +30,6 @@
     }
   ],
   "web_accessible_resources": ["js/inject.bundle.js"],
-  "permissions": [
-    "contextMenus",
-    "activeTab",
-    "cookies",
-    "storage"
-  ],
+  "permissions": ["contextMenus", "activeTab", "cookies", "storage"],
   "content_security_policy": "default-src 'self'; script-src 'self' https://*.jinshuju.net 'unsafe-eval'; connect-src https://*.jinshuju.net; style-src * 'unsafe-inline' 'self' blob:; img-src 'self' data:;"
 }

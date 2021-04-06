@@ -9,8 +9,13 @@ const Popup = () => {
 
   useEffect(() => {
     setIsLoading(true)
-    chrome.tabs.query({ active: true }, (tabs) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0] || {}
+      if (!tab.url) {
+        setContent('没有匹配到 URL')
+        setIsLoading(false)
+        return
+      }
 
       const matchResult = tab.url.match(/jinshuju.net\/f\/([^/?]+)/) || []
       const matchedformToken = matchResult[1]
