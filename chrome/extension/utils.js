@@ -5,7 +5,7 @@ export const initActions = () =>
     const actions = [
       {
         id: generateId(),
-        name: '当前迭代',
+        name: 'ENT Current',
         action: {
           type: 'link',
           value:
@@ -13,6 +13,36 @@ export const initActions = () =>
             'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m}&label_name[]=ENT',
         },
       },
+      {
+        id: generateId(),
+        name: 'ENT Next',
+        action: {
+          type: 'link',
+          value:
+            // eslint-disable-next-line no-template-curly-in-string
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m+1}&label_name[]=ENT',
+        },
+      },
+      {
+        id: generateId(),
+        name: '主线 Current',
+        action: {
+          type: 'link',
+          value:
+            // eslint-disable-next-line no-template-curly-in-string
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m}&not[label_name][]=ENT',
+        },
+      },
+      {
+        id: generateId(),
+        name: '主线 Next',
+        action: {
+          type: 'link',
+          value:
+            // eslint-disable-next-line no-template-curly-in-string
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m+1}&not[label_name][]=ENT',
+        },
+      }
     ]
     chrome.storage.local.set({ actions }, () => {
       resolve(actions)
