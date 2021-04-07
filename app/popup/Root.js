@@ -17,7 +17,7 @@ const Popup = () => {
         return
       }
 
-      const matchResult = tab.url.match(/jinshuju.net\/f\/([^/?]+)/) || []
+      const matchResult = tab.url.match(/\/f\/([^/?]+)/) || []
       const matchedformToken = matchResult[1]
 
       if (matchedformToken) {
