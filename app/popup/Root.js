@@ -12,7 +12,7 @@ const Popup = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0] || {}
       if (!tab.url) {
-        setContent('没有匹配到 URL')
+        setContent('没有匹配到 URL.')
         setIsLoading(false)
         return
       }
@@ -26,7 +26,7 @@ const Popup = () => {
           setContent(resData)
         })
       } else {
-        setContent('没有匹配到 From Token.')
+        setContent('没有匹配到 FormToken.')
         setIsLoading(false)
       }
     })
