@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { map, isString, forEach, cloneDeep } from 'lodash'
 import { Input, Form, Button, message, PageHeader, Tabs } from 'antd'
 import Actions from './Actions'
+import Toolbar from './Toolbar'
 import styles from './app.module.css'
 
 const { TabPane } = Tabs
@@ -40,6 +41,9 @@ const App = () => {
         <Tabs defaultActiveKey="1" onChange={callback} animated={false}>
           <TabPane tab="Actions Setting" key="Actions Setting">
             <Actions />
+          </TabPane>
+          <TabPane tab="Toolbar Setting" key="Toolbar Setting">
+            <Toolbar />
           </TabPane>
           <TabPane tab="Filler Setting" key="Filler Setting">
             <Form

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { random, forEach, sampleSize, sample, template } from 'lodash'
+import { random, forEach, sampleSize, sample, template, get } from 'lodash'
 import { css } from '@emotion/css'
 
 let fields = []
@@ -128,52 +128,64 @@ const styles = {
   statusValue: __c_statusValue,
 }
 
+/**
+ * renderToolbar
+ */
+const renderToolbar = ({ scene, token, enableRecovery, storage, isDefaultShow }) => {
+  const host = window.location.origin
+  const compiled = template(
+    `<div class="${styles.container} ${isDefaultShow ? styles.isShow : ''}">
+      <a class="${styles.showBtn}">${showIconSvg}</a>
+      <div class="${styles.toolbar}">
+        <div class="${styles.toolbarLeft}">
+          <a class="${styles.hideBtn}">${hideIconSvg}</a>
+          <div class="${styles.actions}">
+            <a class="${styles.action}" href="${host}/forms/${token}/edit" target="_self">Edit</a>
+            <a class="${styles.action}" href="${host}/forms/${token}/entries" target="_self">Entries</a>
+            <a class="${styles.action}" href="${host}/forms/${token}/reports" target="_self">Reports</a>
+            <a class="${styles.action}" href="${host}/forms/${token}/setting" target="_self">Setting</a>
+          </div>
+        </div>
+        <div class="${styles.toolbarRight}">
+          <div>scene: <span class="${styles.statusValue}">${sceneMap[scene] || scene}</span></div>
+          <div>storage: <span class="${styles.statusValue}">${storage}</span></div>
+          <div>recovery: <span class="${styles.statusValue}">${enableRecovery ? 'on' : 'off'}</span></div>
+        </div>
+      </div>
+    </div>`
+  )
+
+  const html = compiled()
+
+  const root = document.createElement('div')
+  root.innerHTML = html
+  document.body.appendChild(root)
+
+  const container = root.querySelector(`.${__c_container}`)
+  const showBtn = container.querySelector(`.${__c_showBtn}`)
+  const hideBtn = container.querySelector(`.${__c_hideBtn}`)
+
+  showBtn.addEventListener('click', function() {
+    container.classList.add(__c_isShow)
+  })
+
+  hideBtn.addEventListener('click', function() {
+    container.classList.remove(__c_isShow)
+  })
+}
+
 window.addEventListener(
   'message',
   (e) => {
     if (e.data && e.data.cmd === '__FORM_INFO__') {
-      const host = window.location.origin
       const { scene = 'form', token, enableRecovery, storage } = e.data.data
       fields = e.data.data.fields
-
-      const compiled = template(
-        `<div class="${styles.container} ${styles.isShow}">
-          <a class="${styles.showBtn}">${showIconSvg}</a>
-          <div class="${styles.toolbar}">
-            <div class="${styles.toolbarLeft}">
-              <a class="${styles.hideBtn}">${hideIconSvg}</a>
-              <div class="${styles.actions}">
-                <a class="${styles.action}" href="${host}/forms/${token}/edit" target="_self">Edit</a>
-                <a class="${styles.action}" href="${host}/forms/${token}/setting" target="_self">Setting</a>
-                <a class="${styles.action}" href="${host}/forms/${token}/entries" target="_self">Entries</a>
-                <a class="${styles.action}" href="${host}/forms/${token}/reports" target="_self">Reports</a>
-              </div>
-            </div>
-            <div class="${styles.toolbarRight}">
-              <div>scene: <span class="${styles.statusValue}">${sceneMap[scene] || scene}</span></div>
-              <div>storage: <span class="${styles.statusValue}">${storage}</span></div>
-              <div>recovery: <span class="${styles.statusValue}">${enableRecovery ? 'on' : 'off'}</span></div>
-            </div>
-          </div>
-        </div>`
-      )
-
-      const html = compiled()
-
-      const root = document.createElement('div')
-      root.innerHTML = html
-      document.body.appendChild(root)
-
-      const container = root.querySelector(`.${__c_container}`)
-      const showBtn = container.querySelector(`.${__c_showBtn}`)
-      const hideBtn = container.querySelector(`.${__c_hideBtn}`)
-
-      showBtn.addEventListener('click', function() {
-        container.classList.add(__c_isShow)
-      })
-
-      hideBtn.addEventListener('click', function() {
-        container.classList.remove(__c_isShow)
+      chrome.storage.local.get('toolbar', (value) => {
+        const disable = get(value, 'toolbar.disable')
+        const hidden = get(value, 'toolbar.hidden')
+        if (!disable) {
+          renderToolbar({ scene, token, enableRecovery, storage, isDefaultShow: !hidden })
+        }
       })
     }
   },
