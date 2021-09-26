@@ -1,62 +1,43 @@
-import { find, keys, includes, map } from 'lodash'
+import { includes, map, get } from 'lodash'
 
 const CHOICES_FIELDS = ['RadioButton', 'ImageRadioButton', 'CheckBox', 'DropDown', 'ImageCheckBox']
 
-export const getFields = () => {
-  if (window.__APOLLO_STATE__) {
-    const data = window.__APOLLO_STATE__
-    const apolloKeys = keys(data)
-    const fieldsKey = find(apolloKeys, (key) => key.match(/fields$/))
-    const fields = data[fieldsKey]
+const getAvailbaleFields = (fields) => {
+  const ns = fields.nodes.map((node) => {
+    const type = node.type
+    const apiCode = node.apiCode
 
-    const ns = fields.nodes.map((node) => {
-      const type = data[node.id].type
-      const apiCode = data[node.id].apiCode
+    let obj = {}
+    obj = { type, apiCode }
 
-      let obj = {}
-      obj = { type, apiCode }
+    if (includes(CHOICES_FIELDS, type)) {
+      obj.choiceValues = map(node.choices, (c) => c.value)
+    }
 
-      if (includes(CHOICES_FIELDS, type)) {
-        obj.choiceValues = map(data[node.id].choices, (c) => data[c.id].value)
-      }
+    if (type === 'NpsField' || type === 'RatingField') {
+      obj.ratingMax = node.ratingMax
+    }
 
-      if (type === 'NpsField' || type === 'RatingField') {
-        obj.ratingMax = data[node.id].ratingMax
-      }
+    return obj
+  })
 
-      return obj
-    })
+  return ns
+}
 
-    return ns
-  }
+export const getFormInfo = () => {
+  const data = get(GD, 'publishedFormData.data')
+  const form = get(data, 'publishedForm.form')
+  const status = get(data, 'publishedForm.status.key')
 
-  if (GD.publishedFormData) {
-    const data = GD.publishedFormData.data
-    const fields = data.publishedForm.form.fields
+  const fields = getAvailbaleFields(get(form, 'fields', []))
+  const token = get(form, 'token')
+  const scene = get(form, 'scene')
+  const enableRecovery = get(form, 'setting.enableRecovery')
+  const storage = get(form, 'storageConfig.storage')
 
-    const ns = fields.nodes.map((node) => {
-      const type = node.type
-      const apiCode = node.apiCode
-
-      let obj = {}
-      obj = { type, apiCode }
-
-      if (includes(CHOICES_FIELDS, type)) {
-        obj.choiceValues = map(node.choices, (c) => c.value)
-      }
-
-      if (type === 'NpsField' || type === 'RatingField') {
-        obj.ratingMax = node.ratingMax
-      }
-
-      return obj
-    })
-
-    return ns
-  }
+  return { fields, status, scene, enableRecovery, storage, token }
 }
 
 window.addEventListener('load', () => {
-  const fields = getFields()
-  window.postMessage({ cmd: 'getFields', data: fields }, '*')
+  window.postMessage({ cmd: '__FORM_INFO__', data: getFormInfo() }, '*')
 })

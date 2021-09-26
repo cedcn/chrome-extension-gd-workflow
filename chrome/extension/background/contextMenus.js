@@ -1,7 +1,7 @@
 import { reduce, forEach, get, map } from 'lodash'
 import parse from 'url-parse'
 import { getCurrentMileStoneStr, generateId } from '../../../app/utils'
-import { initFiller, initActions } from '../utils'
+import { initFiller, initActions, initToolbar } from '../utils'
 
 const CONTEXT_MENU_ID = 'form_fill_menu'
 
@@ -102,6 +102,7 @@ chrome.contextMenus.onClicked.addListener((params, tab) => {
 const installedHandler = ({ reason }) => {
   if (reason === 'install') {
     initFiller()
+    initToolbar()
     initActions().then((actions) => {
       actionsMenu = updateDynamicMenus(actions)
     })

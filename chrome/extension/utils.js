@@ -42,7 +42,7 @@ export const initActions = () =>
             // eslint-disable-next-line no-template-curly-in-string
             'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m+1}&not[label_name][]=ENT',
         },
-      }
+      },
     ]
     chrome.storage.local.set({ actions }, () => {
       resolve(actions)
@@ -68,5 +68,17 @@ export const initFiller = () =>
 
     chrome.storage.local.set({ filler }, () => {
       resolve(filler)
+    })
+  })
+
+export const initToolbar = () =>
+  new Promise((resolve) => {
+    const toolbar = {
+      disable: false,
+      hidden: false,
+    }
+
+    chrome.storage.local.set({ toolbar }, () => {
+      resolve(toolbar)
     })
   })
