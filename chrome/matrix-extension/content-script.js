@@ -34,27 +34,18 @@ const calculatedMilestoneHref = function(milestoneTitle) {
   return currentURL.toString();
 };
 
-const allProjectLabels = [
-  "主线改版",
-  "移动端增长",
-  "质量部"
-]
-
 const allLabelKeys = [
   "not[label_name][]",
   "label_name[]"
 ]
 
-const calculatedLabelHref = function(labelValues, matcher) {
+const calculatedLabelHref = function(allLabelValues, labelValues, matcher) {
   const currentURL = new URL(window.location.href);
 
-  const searchParamKeyValuesToKeep = {};
+  const searchParamKeyValuesToKeep = [];
   Array.from(currentURL.searchParams).forEach(function ([key, value]) {
-    if (!(allLabelKeys.includes(key) && allProjectLabels.includes(value))) {
-      console.log("xxxx");
-      console.log(key);
-      console.log(value);
-      searchParamKeyValuesToKeep[key] = value;
+    if (!(allLabelKeys.includes(key) && allLabelValues.includes(value))) {
+      searchParamKeyValuesToKeep.push([key, value]);
     }
   });
 
@@ -63,7 +54,7 @@ const calculatedLabelHref = function(labelValues, matcher) {
   });
 
 
-  Object.entries(searchParamKeyValuesToKeep).forEach(function([key, value]) {
+  searchParamKeyValuesToKeep.forEach(function([key, value]) {
     currentURL.searchParams.append(key, value);
   });
 
@@ -82,6 +73,22 @@ superFiltersDiv.style = "border-top: 0;";
 superFiltersDiv.className = "row-content-block";
 
 const currentMilestone = getCurrentMilestoneFromUrl();
+
+// Milestone quick links
+const renderMilestoneQuickLink = function(title, href) {
+  const linkTag = document.createElement("a");
+  linkTag.innerText = title;
+  linkTag.href = href;
+  linkTag.className = "mr-2 btn btn-primary btn-sm";
+  superFiltersDiv.appendChild(linkTag);
+};
+
+[
+  ["This Week", calculatedMilestoneHref(getCurrentMileStoneStr())],
+  ["Next Week", calculatedMilestoneHref(getCurrentMileStoneStr(1))],
+].forEach(function([title, href]) {
+  renderMilestoneQuickLink(title, href);
+});
 
 // Milestone Dropdown
 superFiltersDiv.innerHTML += "<span class=\"mr-1 p-1 pl-2 pr-2 badge bg-warning text-white\">Milestone</span>";
@@ -109,24 +116,14 @@ const milestoneDropdownItems = milestoneTitles.map(function (milestoneTitle) {
 const dropdownTag = buildDropdown(milestoneDropdownItems);
 superFiltersDiv.appendChild(dropdownTag);
 
-// Milestone quick links
-const renderMilestoneQuickLink = function(title, href) {
-  const linkTag = document.createElement("a");
-  linkTag.innerText = title;
-  linkTag.href = href;
-  linkTag.className = "mr-2";
-  superFiltersDiv.appendChild(linkTag);
-};
-
-[
-  ["This Week", calculatedMilestoneHref(getCurrentMileStoneStr())],
-  ["Next Week", calculatedMilestoneHref(getCurrentMileStoneStr(1))],
-].forEach(function([title, href]) {
-  renderMilestoneQuickLink(title, href);
-});
-
 // Project links
 superFiltersDiv.innerHTML += "<span class=\"mr-1 p-1 pl-2 pr-2 badge bg-warning text-white\">Project</span>";
+
+const allProjectValues = [
+  "主线改版",
+  "移动端增长",
+  "质量部"
+]
 
 const projects = [
   ["产品迭代", ["主线改版", "移动端增长"], 'not'],
@@ -136,9 +133,35 @@ const projects = [
 ]
 
 projects.forEach(function ([projectName, labelValues, matcher]) {
-  const href = calculatedLabelHref(labelValues, matcher);
+  const href = calculatedLabelHref(allProjectValues, labelValues, matcher);
   const linkTag = document.createElement("a");
   linkTag.innerText = projectName;
+  linkTag.href = href;
+  linkTag.className = "mr-2";
+  superFiltersDiv.appendChild(linkTag);
+});
+
+// Type links
+superFiltersDiv.innerHTML += "<span class=\"mr-1 p-1 pl-2 pr-2 badge bg-warning text-white\">Type</span>";
+
+const allTypeValues = [
+  "bug",
+  "feature",
+  "defect"
+]
+
+const types = [
+  ["bug", ["bug"]],
+  ["feature", ["feature"]],
+  ["defect", ["defect"]],
+  ["未分类", ["bug", "feature", "defect"], 'not'],
+  ["All", []],
+]
+
+types.forEach(function ([typeName, labelValues, matcher]) {
+  const href = calculatedLabelHref(allTypeValues, labelValues, matcher);
+  const linkTag = document.createElement("a");
+  linkTag.innerText = typeName;
   linkTag.href = href;
   linkTag.className = "mr-2";
   superFiltersDiv.appendChild(linkTag);
