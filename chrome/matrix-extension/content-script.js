@@ -1,3 +1,5 @@
+import { getCurrentMileStoneStr } from '../../app/utils'
+
 const issuesFiltersDiv = document.querySelectorAll(".issues-filters")[0];
 
 const buildDropdown = function(dropdownItems) {
@@ -18,7 +20,7 @@ const buildDropdown = function(dropdownItems) {
   return dropdownTag;
 };
 
-const getCurrentMilestone = function() {
+const getCurrentMilestoneFromUrl = function() {
   const currentURL = new URL(window.location.href);
   return currentURL.searchParams.get('milestone_title');
 }
@@ -47,8 +49,11 @@ const calculatedLabelHref = function(labelValues, matcher) {
   const currentURL = new URL(window.location.href);
 
   const searchParamKeyValuesToKeep = {};
-  currentURL.searchParams.forEach(function ([key, value]) {
+  Array.from(currentURL.searchParams).forEach(function ([key, value]) {
     if (!(allLabelKeys.includes(key) && allProjectLabels.includes(value))) {
+      console.log("xxxx");
+      console.log(key);
+      console.log(value);
       searchParamKeyValuesToKeep[key] = value;
     }
   });
@@ -76,24 +81,24 @@ const superFiltersDiv = document.createElement("div");
 superFiltersDiv.style = "border-top: 0;";
 superFiltersDiv.className = "row-content-block";
 
-const currentMilestone = getCurrentMilestone();
+const currentMilestone = getCurrentMilestoneFromUrl();
 
-// Milestone links
+// Milestone Dropdown
 superFiltersDiv.innerHTML += "<span class=\"mr-1 p-1 pl-2 pr-2 badge bg-warning text-white\">Milestone</span>";
 
 const milestoneTitles = [
-  ["BIG199: FEB28 - MAR06"],
-  ["BIG200: MAR07 - MAR13"],
-  ["BIG201: MAR14 - MAR20"],
-  ["BIG202: MAR21 - MAR27"],
-  ["BIG203: MAR28 - APR03"],
-  ["BIG204: APR04 - APR10"],
-  ["BIG205: APR11 - APR17"],
-  ["BIG206: APR18 - APR24"],
-  ["BIG207: APR25 - MAY01"]
+  getCurrentMileStoneStr(-4),
+  getCurrentMileStoneStr(-3),
+  getCurrentMileStoneStr(-2),
+  getCurrentMileStoneStr(-1),
+  getCurrentMileStoneStr(),
+  getCurrentMileStoneStr(1),
+  getCurrentMileStoneStr(2),
+  getCurrentMileStoneStr(3),
+  getCurrentMileStoneStr(4)
 ];
 
-const milestoneDropdownItems = milestoneTitles.map(function ([milestoneTitle]) {
+const milestoneDropdownItems = milestoneTitles.map(function (milestoneTitle) {
   return {
     itemText: milestoneTitle,
     itemLink: calculatedMilestoneHref(milestoneTitle),
@@ -103,6 +108,22 @@ const milestoneDropdownItems = milestoneTitles.map(function ([milestoneTitle]) {
 
 const dropdownTag = buildDropdown(milestoneDropdownItems);
 superFiltersDiv.appendChild(dropdownTag);
+
+// Milestone quick links
+const renderMilestoneQuickLink = function(title, href) {
+  const linkTag = document.createElement("a");
+  linkTag.innerText = title;
+  linkTag.href = href;
+  linkTag.className = "mr-2";
+  superFiltersDiv.appendChild(linkTag);
+};
+
+[
+  ["This Week", calculatedMilestoneHref(getCurrentMileStoneStr())],
+  ["Next Week", calculatedMilestoneHref(getCurrentMileStoneStr(1))],
+].forEach(function([title, href]) {
+  renderMilestoneQuickLink(title, href);
+});
 
 // Project links
 superFiltersDiv.innerHTML += "<span class=\"mr-1 p-1 pl-2 pr-2 badge bg-warning text-white\">Project</span>";
