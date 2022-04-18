@@ -27,6 +27,13 @@
       "matches": ["http://*.jinshuju.net/f/*", "https://*.jinshuju.net/f/*"],
       "js": ["js/inject-script.bundle.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3*",
+        "https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/issues*"
+      ],
+      "js": ["js/matrix-content-script.bundle.js"]
     }
   ],
   "web_accessible_resources": ["js/inject.bundle.js"],

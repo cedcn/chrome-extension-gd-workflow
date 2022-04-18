@@ -8,6 +8,7 @@ const baseDevConfig = () => ({
   entry: {
     background: path.join(__dirname, '../chrome/extension/background'),
     inject: path.join(__dirname, '../chrome/extension/inject'),
+    'matrix-content-script': path.join(__dirname, '../chrome/matrix-extension/content-script'),
     'content-script': path.join(__dirname, '../chrome/extension/content-script'),
     'inject-script': path.join(__dirname, '../chrome/extension/inject-script'),
     options: path.join(__dirname, '../chrome/extension/options'),
