@@ -77,23 +77,6 @@ chrome.storage.onChanged.addListener((changes) => {
 
 const FORM_FILL_MENU_ID = 'form_fill_menu'
 
-chrome.contextMenus.create({
-  id: FORM_FILL_MENU_ID,
-  title: 'Fill This Form',
-  contexts: ['page'],
-  documentUrlPatterns: ['http://*.jinshuju.net/f/*', 'https://*.jinshuju.net/f/*'],
-})
-
-chrome.contextMenus.create({
-  id: 'separator',
-  type: 'separator',
-})
-
-chrome.storage.local.get('actions', (value) => {
-  const actions = get(value, 'actions', [])
-  actionsMenu = updateDynamicMenus(actions)
-})
-
 chrome.contextMenus.onClicked.addListener((params, tab) => {
   if (params.menuItemId === FORM_FILL_MENU_ID) {
     chrome.tabs.sendMessage(tab.id, 'fillMenuClicked')
@@ -101,6 +84,23 @@ chrome.contextMenus.onClicked.addListener((params, tab) => {
 })
 
 const installedHandler = async ({ reason }) => {
+  chrome.contextMenus.create({
+    id: FORM_FILL_MENU_ID,
+    title: 'Fill This Form',
+    contexts: ['page'],
+    documentUrlPatterns: ['http://*.jinshuju.net/f/*', 'https://*.jinshuju.net/f/*'],
+  })
+
+  chrome.contextMenus.create({
+    id: 'separator',
+    type: 'separator',
+  })
+
+  chrome.storage.local.get('actions', (value) => {
+    const actions = get(value, 'actions', [])
+    actionsMenu = updateDynamicMenus(actions)
+  })
+
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     await initFiller()
     await initToolbar()
