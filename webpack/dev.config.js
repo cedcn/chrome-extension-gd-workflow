@@ -2,17 +2,15 @@ const path = require('path')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 
-const baseDevConfig = () => ({
-  devtool: 'eval-source-map',
+const devConfig = {
+  devtool: 'source-map',
   mode: 'development',
   entry: {
-    background: path.join(__dirname, '../chrome/extension/background'),
-    inject: path.join(__dirname, '../chrome/extension/inject'),
-    'matrix-content-script': path.join(__dirname, '../chrome/matrix-extension/content-script'),
-    'content-script': path.join(__dirname, '../chrome/extension/content-script'),
-    'inject-script': path.join(__dirname, '../chrome/extension/inject-script'),
     options: path.join(__dirname, '../chrome/extension/options'),
     popup: path.join(__dirname, '../chrome/extension/popup'),
+    'matrix-content': path.join(__dirname, '../chrome/extension/matrix-content'),
+    'published-form-content': path.join(__dirname, '../chrome/extension/published-form-content'),
+    'published-form-inject': path.join(__dirname, '../chrome/extension/published-form-inject'),
   },
   output: {
     path: path.join(__dirname, '../dev/js'),
@@ -65,8 +63,19 @@ const baseDevConfig = () => ({
       },
     ],
   },
-})
+}
 
-const appConfig = baseDevConfig()
+const backgroundDevConfig = {
+  target: 'webworker',
+  devtool: 'source-map',
+  mode: 'development',
+  entry: {
+    background: path.join(__dirname, '../chrome/extension/background'),
+  },
+  output: {
+    path: path.join(__dirname, '../dev'),
+    filename: '[name].js',
+  },
+}
 
-module.exports = appConfig
+module.exports = [devConfig, backgroundDevConfig]

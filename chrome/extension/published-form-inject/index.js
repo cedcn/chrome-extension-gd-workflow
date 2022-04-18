@@ -38,6 +38,5 @@ export const getFormInfo = () => {
   return { fields, status, scene, enableRecovery, storage, token }
 }
 
-window.addEventListener('load', () => {
-  window.postMessage({ cmd: '__FORM_INFO__', data: getFormInfo() }, '*')
-})
+const formInfo = getFormInfo()
+window.postMessage({ cmd: '__FORM_INFO__', context: formInfo }, window.location.origin)

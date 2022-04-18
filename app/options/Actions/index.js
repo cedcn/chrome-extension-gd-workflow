@@ -3,7 +3,7 @@ import { map, isArray, get } from 'lodash'
 import produce from 'immer'
 import { Input, Table, Space, Modal, Form, Select, message } from 'antd'
 
-import { getCurrentMileStoneStr } from '../../utils'
+import getCurrentMileStoneStr from '../../utils/getCurrentMileStoneStr'
 import styles from './index.module.css'
 
 const { TextArea } = Input

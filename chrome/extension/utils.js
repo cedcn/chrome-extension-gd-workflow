@@ -1,4 +1,4 @@
-import { generateId } from '../../app/utils'
+import generateId from '../../app/utils/generateId'
 
 export const initActions = () =>
   new Promise((resolve) => {

@@ -1,7 +1,4 @@
 import floor from 'lodash/floor'
-import map from 'lodash/map'
-import { message } from 'antd'
-import axios from 'axios'
 import dayjs from 'dayjs'
 
 require('dayjs/locale/zh-cn')
@@ -13,7 +10,7 @@ dayjs.extend(duration)
 
 dayjs.locale('zh-cn')
 
-export const getCurrentMileStoneStr = (offset = 0) => {
+const getCurrentMileStoneStr = (offset = 0) => {
   const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
   const startDay = dayjs('2018-05-07T00:00:00.000Z')
   let currentDay = dayjs()
@@ -35,25 +32,4 @@ export const getCurrentMileStoneStr = (offset = 0) => {
   return str
 }
 
-export const generateId = () =>
-  Math.random()
-    .toString(36)
-    .substr(2)
-
-export const quickLook = (formToken, cb) => {
-  chrome.cookies.getAll({ url: 'https://vaultx.jinshuju.net/' }, async (cookie) => {
-    const axiosInstance = axios.create({
-      baseURL: 'https://vaultx.jinshuju.net/',
-      headers: {
-        Cookie: map(cookie, (item) => `${item.name}=${item.value}`).join(';'),
-      },
-    })
-
-    try {
-      const response = await axiosInstance.get(`/quick_look/forms/${formToken}`)
-      cb(response.data)
-    } catch (error) {
-      message.error('网络错误')
-    }
-  })
-}
+export default getCurrentMileStoneStr

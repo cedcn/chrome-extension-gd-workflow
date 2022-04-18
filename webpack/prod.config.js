@@ -2,15 +2,13 @@ const path = require('path')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 
-module.exports = {
+const prodConfig = {
   entry: {
-    background: path.join(__dirname, '../chrome/extension/background'),
-    inject: path.join(__dirname, '../chrome/extension/inject'),
-    'matrix-content-script': path.join(__dirname, '../chrome/matrix-extension/content-script'),
-    'content-script': path.join(__dirname, '../chrome/extension/content-script'),
-    'inject-script': path.join(__dirname, '../chrome/extension/inject-script'),
     options: path.join(__dirname, '../chrome/extension/options'),
     popup: path.join(__dirname, '../chrome/extension/popup'),
+    'matrix-content': path.join(__dirname, '../chrome/extension/matrix-content'),
+    'published-form-content': path.join(__dirname, '../chrome/extension/published-form-content'),
+    'published-form-inject': path.join(__dirname, '../chrome/extension/published-form-inject'),
   },
   mode: 'production',
   output: {
@@ -68,3 +66,17 @@ module.exports = {
     ],
   },
 }
+
+const backgroundProdConfig = {
+  target: 'webworker',
+  mode: 'production',
+  entry: {
+    background: path.join(__dirname, '../chrome/extension/background'),
+  },
+  output: {
+    path: path.join(__dirname, '../build'),
+    filename: '[name].js',
+  },
+}
+
+module.exports = [prodConfig, backgroundProdConfig]

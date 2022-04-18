@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Spin } from 'antd'
-import { quickLook } from '../utils'
+import quickLook from './quickLook'
 import styles from './index.module.css'
 
 const Popup = () => {

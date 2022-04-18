@@ -1,9 +1,9 @@
 {
-  "version": "3.0.1",
+  "version": "4.0.0",
   "name": "GD Workflow",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "金数据 Workflow",
-  "browser_action": {
+  "action": {
     "default_title": "GD Workflow",
     "default_popup": "popup.html"
   },
@@ -16,27 +16,29 @@
   "author": "shores",
   "homepage_url": "https://jinshuju.net/",
   "background": {
-    "page": "background.html"
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": ["http://*.jinshuju.net/f/*", "https://*.jinshuju.net/f/*"],
-      "js": ["js/content-script.bundle.js"]
-    },
-    {
-      "matches": ["http://*.jinshuju.net/f/*", "https://*.jinshuju.net/f/*"],
-      "js": ["js/inject-script.bundle.js"],
-      "run_at": "document_start"
+      "js": ["js/published-form-content.bundle.js"]
     },
     {
       "matches": [
         "https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3*",
         "https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/issues*"
       ],
-      "js": ["js/matrix-content-script.bundle.js"]
+      "js": ["js/matrix-content.bundle.js"]
     }
   ],
-  "web_accessible_resources": ["js/inject.bundle.js"],
+  "web_accessible_resources": [
+    {
+      "resources": ["js/published-form-inject.bundle.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "permissions": ["contextMenus", "activeTab", "cookies", "storage"],
-  "content_security_policy": "default-src 'self'; script-src 'self' https://*.jinshuju.net 'unsafe-eval'; connect-src https://*.jinshuju.net; style-src * 'unsafe-inline' 'self' blob:; img-src 'self' data:;"
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'self'; connect-src https://*.jinshuju.net; style-src * 'unsafe-inline' 'self' blob:; img-src 'self' data:;"
+  }
 }
