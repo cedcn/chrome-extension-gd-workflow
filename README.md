@@ -1,5 +1,23 @@
-# chrome-extension-gd-workflow
+# Gd Workflow 金数据产品研发助手
 
-## SETUP
+## Wiki Home Page
 
-https://chrome.google.com/webstore/detail/gd-workflow/clapcpmdlclpngcckhadiocafbggilaf
+https://matrix.jinshuju.co/engineering/hackday/chrome-extension-gd-workflow/-/wikis/home
+
+## Lint
+
+运行代码静态检测
+
+`yarn run lint`
+
+## build
+
+构建
+
+`yarn run build`
+
+## Release
+
+发布插件（将 build 产物构建压缩包）
+
+`./build.sh`
