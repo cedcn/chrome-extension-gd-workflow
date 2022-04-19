@@ -2,20 +2,8 @@ const path = require('path')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 
-const prodConfig = {
-  entry: {
-    options: path.join(__dirname, '../chrome/extension/options'),
-    popup: path.join(__dirname, '../chrome/extension/popup'),
-    'matrix-content': path.join(__dirname, '../chrome/extension/matrix-content'),
-    'published-form-content': path.join(__dirname, '../chrome/extension/published-form-content'),
-    'published-form-inject': path.join(__dirname, '../chrome/extension/published-form-inject'),
-  },
+const config = {
   mode: 'production',
-  output: {
-    path: path.join(__dirname, '../build/js'),
-    filename: '[name].bundle.js',
-    chunkFilename: '[id].chunk.js',
-  },
   optimization: {
     minimize: true,
   },
@@ -67,6 +55,21 @@ const prodConfig = {
   },
 }
 
+const prodConfig = {
+  entry: {
+    options: path.join(__dirname, '../chrome/extension/options'),
+    popup: path.join(__dirname, '../chrome/extension/popup'),
+    'matrix-content': path.join(__dirname, '../chrome/extension/matrix-content'),
+    'published-form-content': path.join(__dirname, '../chrome/extension/published-form-content'),
+    'published-form-inject': path.join(__dirname, '../chrome/extension/published-form-inject'),
+  },
+  output: {
+    path: path.join(__dirname, '../build/js'),
+    filename: '[name].bundle.js',
+  },
+  ...config,
+}
+
 const backgroundProdConfig = {
   target: 'webworker',
   mode: 'production',
@@ -77,6 +80,7 @@ const backgroundProdConfig = {
     path: path.join(__dirname, '../build'),
     filename: '[name].js',
   },
+  ...config,
 }
 
 module.exports = [prodConfig, backgroundProdConfig]

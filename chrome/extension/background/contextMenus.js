@@ -1,44 +1,68 @@
-import { reduce, forEach, get, map, find } from 'lodash'
+import { reduce, forEach, get, map, find, isNil, isEmpty } from 'lodash'
 import parse from 'url-parse'
-import getCurrentMileStoneStr from '../../../app/utils/getCurrentMileStoneStr'
 import generateId from '../../../app/utils/generateId'
+import getCurrentMileStoneStr from '../../../app/utils/getCurrentMileStoneStr'
 import { initFiller, initActions, initToolbar } from '../utils'
 
-let dynamicMenus = []
+const FORM_FILL_MENU_ID = 'form_fill_menu'
 
-const updateDynamicMenus = (actions) => {
-  return map(actions, (action) => {
-    const id = generateId()
-    const menuItemId = `action-menu-${id}`
+const createDynamicMenus = (actions) => {
+  return Promise.all(
+    map(actions, (action) => {
+      const menuItemId = `action-menu-${action.id || generateId()}`
 
-    chrome.contextMenus.create({
-      id: menuItemId,
-      title: action.name,
-      contexts: ['all'],
-      documentUrlPatterns: ['http://*/*', 'https://*/*'],
+      return new Promise((reslove) => {
+        chrome.contextMenus.create(
+          {
+            id: menuItemId,
+            title: action.name,
+            contexts: ['all'],
+            documentUrlPatterns: ['http://*/*', 'https://*/*'],
+          },
+          () => {
+            reslove({ menuItemId, ...action })
+          }
+        )
+      })
     })
+  )
+}
 
-    return { menuItemId, ...action }
+const removeAllDynamicMenus = (dynamicMenus) => {
+  return new Promise((reslove) => {
+    if (isEmpty(dynamicMenus)) reslove()
+
+    let i = 0
+    forEach(dynamicMenus, (menu) => {
+      chrome.contextMenus.remove(menu.menuItemId, () => {
+        if (++i >= dynamicMenus.length - 1) {
+          reslove()
+        }
+      })
+    })
   })
 }
+
+const updateDynamicMenus = async (actions) => {
+  const { dynamicMenus } = await chrome.storage.local.get('dynamicMenus')
+  if (!isNil(dynamicMenus)) {
+    await removeAllDynamicMenus(dynamicMenus)
+  }
+
+  const newDynamicMenus = await createDynamicMenus(actions)
+  chrome.storage.local.set({ dynamicMenus: newDynamicMenus })
+}
+
 //
-const storageChangedListener = (changes) => {
+const storageChangedListener = async (changes) => {
   if ('actions' in changes) {
     const storageChange = changes.actions
     const newActions = storageChange.newValue
+    const oldActions = storageChange.oldValue
 
-    new Promise((reslove) => {
-      let i = 0
-      forEach(dynamicMenus, (menu) => {
-        chrome.contextMenus.remove(menu.menuItemId, () => {
-          if (++i >= dynamicMenus.length - 1) {
-            reslove()
-          }
-        })
-      })
-    }).then(() => {
-      dynamicMenus = updateDynamicMenus(newActions)
-    })
+    if (!isNil(oldActions)) {
+      await updateDynamicMenus(newActions)
+    }
   }
 }
 
@@ -46,7 +70,6 @@ chrome.storage.onChanged.removeListener(storageChangedListener)
 chrome.storage.onChanged.addListener(storageChangedListener)
 
 //
-const FORM_FILL_MENU_ID = 'form_fill_menu'
 const contextMenusListener = (params, tab) => {
   if (params.menuItemId === FORM_FILL_MENU_ID) {
     chrome.tabs.sendMessage(tab.id, 'fillMenuClicked')
@@ -57,7 +80,8 @@ chrome.contextMenus.onClicked.removeListener(contextMenusListener)
 chrome.contextMenus.onClicked.addListener(contextMenusListener)
 
 //
-const dynamicMenusListener = (params) => {
+const dynamicMenusListener = async (params) => {
+  const { dynamicMenus } = await chrome.storage.local.get('dynamicMenus')
   const selectedMenu = find(dynamicMenus, (menu) => menu.menuItemId === params.menuItemId)
 
   if (selectedMenu) {
@@ -81,9 +105,10 @@ const dynamicMenusListener = (params) => {
       (acc, cur) => acc.replace(cur.regex, cur.value),
       selectedMenu.action.value
     )
+
     const targetParsed = parse(targetUrl)
-    chrome.tabs.query({ active: true }, (tabs) => {
-      const activeUrl = tabs[0].url
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const activeUrl = get(tabs, '[0].url')
 
       if (activeUrl && activeUrl.match(targetParsed.hostname)) {
         chrome.tabs.update({ url: targetUrl })
@@ -99,6 +124,12 @@ chrome.contextMenus.onClicked.addListener(dynamicMenusListener)
 
 //
 const installedHandler = async ({ reason }) => {
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    await initFiller()
+    await initToolbar()
+    await initActions()
+  }
+
   chrome.contextMenus.create({
     id: FORM_FILL_MENU_ID,
     title: 'Fill This Form',
@@ -111,18 +142,9 @@ const installedHandler = async ({ reason }) => {
     type: 'separator',
   })
 
-  chrome.storage.local.get('actions', (value) => {
-    const actions = get(value, 'actions', [])
-    dynamicMenus = updateDynamicMenus(actions)
-  })
-
-  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    await initFiller()
-    await initToolbar()
-    initActions().then((actions) => {
-      dynamicMenus = updateDynamicMenus(actions)
-    })
-  }
+  const { actions } = await chrome.storage.local.get('actions')
+  const dynamicMenus = await createDynamicMenus(actions)
+  chrome.storage.local.set({ dynamicMenus })
 }
 
 const suspendHandler = () => {

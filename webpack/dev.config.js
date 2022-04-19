@@ -2,21 +2,9 @@ const path = require('path')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 
-const devConfig = {
+const config = {
   devtool: 'source-map',
   mode: 'development',
-  entry: {
-    options: path.join(__dirname, '../chrome/extension/options'),
-    popup: path.join(__dirname, '../chrome/extension/popup'),
-    'matrix-content': path.join(__dirname, '../chrome/extension/matrix-content'),
-    'published-form-content': path.join(__dirname, '../chrome/extension/published-form-content'),
-    'published-form-inject': path.join(__dirname, '../chrome/extension/published-form-inject'),
-  },
-  output: {
-    path: path.join(__dirname, '../dev/js'),
-    filename: '[name].bundle.js',
-    chunkFilename: '[id].chunk.js',
-  },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.IgnorePlugin(/[^/]+\/[\S]+.prod$/),
@@ -65,10 +53,24 @@ const devConfig = {
   },
 }
 
+const devConfig = {
+  entry: {
+    options: path.join(__dirname, '../chrome/extension/options'),
+    popup: path.join(__dirname, '../chrome/extension/popup'),
+    'matrix-content': path.join(__dirname, '../chrome/extension/matrix-content'),
+    'published-form-content': path.join(__dirname, '../chrome/extension/published-form-content'),
+    'published-form-inject': path.join(__dirname, '../chrome/extension/published-form-inject'),
+  },
+  output: {
+    path: path.join(__dirname, '../dev/js'),
+    filename: '[name].bundle.js',
+    chunkFilename: '[id].chunk.js',
+  },
+  ...config,
+}
+
 const backgroundDevConfig = {
   target: 'webworker',
-  devtool: 'source-map',
-  mode: 'development',
   entry: {
     background: path.join(__dirname, '../chrome/extension/background'),
   },
@@ -76,6 +78,7 @@ const backgroundDevConfig = {
     path: path.join(__dirname, '../dev'),
     filename: '[name].js',
   },
+  ...config,
 }
 
 module.exports = [devConfig, backgroundDevConfig]

@@ -4,6 +4,7 @@ import produce from 'immer'
 import { Input, Table, Space, Modal, Form, Select, message } from 'antd'
 
 import getCurrentMileStoneStr from '../../utils/getCurrentMileStoneStr'
+import generateId from '../../utils/generateId'
 import styles from './index.module.css'
 
 const { TextArea } = Input
@@ -160,7 +161,7 @@ const Actions = () => {
   const handleOk = () => {
     form.validateFields().then((values) => {
       const nActions = produce(actions, (draftActions) => {
-        draftActions.push(values)
+        draftActions.push({ ...values, id: generateId() })
       })
 
       chrome.storage.local.set({ actions: nActions }, () => {
@@ -216,9 +217,9 @@ const Actions = () => {
     },
   ]
 
-  const actionsDataSource = map(actions, (action, index) => {
+  const actionsDataSource = map(actions, (action) => {
     return {
-      key: index.toString(),
+      key: action.id,
       name: action.name,
       action: action.action,
       shortcut: '-',
