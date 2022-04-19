@@ -5,42 +5,82 @@ export const initActions = () =>
     const actions = [
       {
         id: generateId(),
-        name: 'ENT Current',
+        name: '产品迭代 Current',
         action: {
           type: 'link',
           value:
             // eslint-disable-next-line no-template-curly-in-string
-            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m}&label_name[]=ENT',
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?milestone_title=${m}&not%5Blabel_name%5D%5B%5D=%E4%B8%BB%E7%BA%BF%E6%94%B9%E7%89%88&not%5Blabel_name%5D%5B%5D=%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%A2%9E%E9%95%BF',
         },
       },
       {
         id: generateId(),
-        name: 'ENT Next',
+        name: '产品迭代 Next',
         action: {
           type: 'link',
           value:
             // eslint-disable-next-line no-template-curly-in-string
-            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m+1}&label_name[]=ENT',
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?milestone_title=${m+1}&not%5Blabel_name%5D%5B%5D=%E4%B8%BB%E7%BA%BF%E6%94%B9%E7%89%88&not%5Blabel_name%5D%5B%5D=%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%A2%9E%E9%95%BF',
         },
       },
       {
         id: generateId(),
-        name: '主线 Current',
+        name: '改版 Current',
         action: {
           type: 'link',
           value:
             // eslint-disable-next-line no-template-curly-in-string
-            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m}&not[label_name][]=ENT',
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?milestone_title=${m}&label_name%5B%5D=%E4%B8%BB%E7%BA%BF%E6%94%B9%E7%89%88',
         },
       },
       {
         id: generateId(),
-        name: '主线 Next',
+        name: '改版 Next',
         action: {
           type: 'link',
           value:
             // eslint-disable-next-line no-template-curly-in-string
-            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?scope=all&utf8=%E2%9C%93&state=opened&milestone_title=${m+1}&not[label_name][]=ENT',
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?milestone_title=${m+1}&label_name%5B%5D=%E4%B8%BB%E7%BA%BF%E6%94%B9%E7%89%88',
+        },
+      },
+      {
+        id: generateId(),
+        name: '移动端增长 Current',
+        action: {
+          type: 'link',
+          value:
+            // eslint-disable-next-line no-template-curly-in-string
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?milestone_title=${m}&label_name%5B%5D=%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%A2%9E%E9%95%BF',
+        },
+      },
+      {
+        id: generateId(),
+        name: '移动端增长 Next',
+        action: {
+          type: 'link',
+          value:
+            // eslint-disable-next-line no-template-curly-in-string
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?milestone_title=${m+1}&label_name%5B%5D=%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%A2%9E%E9%95%BF',
+        },
+      },
+      {
+        id: generateId(),
+        name: '质量部 Current',
+        action: {
+          type: 'link',
+          value:
+            // eslint-disable-next-line no-template-curly-in-string
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?milestone_title=${m}&label_name%5B%5D=%E8%B4%A8%E9%87%8F%E9%83%A8',
+        },
+      },
+      {
+        id: generateId(),
+        name: '质量部 Next',
+        action: {
+          type: 'link',
+          value:
+            // eslint-disable-next-line no-template-curly-in-string
+            'https://matrix.jinshuju.co/engineering/jinshuju/goldendata/-/boards/3?milestone_title=${m+1}&label_name%5B%5D=%E8%B4%A8%E9%87%8F%E9%83%A8',
         },
       },
     ]
